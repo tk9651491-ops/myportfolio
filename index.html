@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alex Morgan | IT Project Manager Portfolio</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome & Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Google Fonts Inter & Cormorant Garamond for luxurious aesthetic -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-light: #faf9f6;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(212, 175, 55, 0.25);
+            --gold-primary: #c5a059;
+            --gold-dark: #a37f37;
+            --gold-light: #d4af37;
+            --gold-subtle: rgba(212, 175, 55, 0.12);
+            --text-dark: #1f2937;
+            --text-muted: #6b7280;
+            --shadow-gold: 0 10px 30px -10px rgba(197, 160, 89, 0.25);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        h1, h2, h3, .font-serif {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+        }
+
+        /* Fullscreen ThreeJS Canvas for light theme */
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        /* Glassmorphism Cards in White & Gold */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: 1.25rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(197, 160, 89, 0.6);
+            box-shadow: var(--shadow-gold);
+            transform: translateY(-4px);
+        }
+
+        /* Navbar Customization */
+        .glass-navbar {
+            background: rgba(250, 249, 246, 0.88);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .nav-link {
+            color: #374151 !important;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--gold-dark) !important;
+        }
+
+        /* Text Highlights & Badges */
+        .text-gold {
+            color: var(--gold-primary) !important;
+        }
+
+        .bg-gold-subtle {
+            background-color: var(--gold-subtle);
+            color: var(--gold-dark);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #d4af37 0%, #c5a059 100%);
+            color: #ffffff;
+            font-weight: 600;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1.75rem;
+            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.3);
+            transition: all 0.25s ease;
+        }
+
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #c5a059 0%, #a37f37 100%);
+            color: #ffffff;
+            box-shadow: 0 6px 20px rgba(197, 160, 89, 0.45);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-gold {
+            border: 1px solid var(--gold-primary);
+            color: var(--gold-dark);
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1.75rem;
+            font-weight: 600;
+            transition: all 0.25s ease;
+        }
+
+        .btn-outline-gold:hover {
+            border-color: var(--gold-dark);
+            color: #ffffff;
+            background: var(--gold-primary);
+            box-shadow: 0 4px 15px rgba(197, 160, 89, 0.25);
+        }
+
+        /* Profile Photo Styling */
+        .profile-image-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-img-card {
+            width: 100%;
+            max-width: 380px;
+            height: 440px;
+            object-fit: cover;
+            border-radius: 1.5rem;
+            border: 3px solid #ffffff;
+            box-shadow: var(--shadow-gold), 0 0 0 1px rgba(212, 175, 55, 0.3);
+            transition: transform 0.4s ease;
+        }
+
+        .profile-img-card:hover {
+            transform: scale(1.02);
+        }
+
+        .gold-ring-glow {
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            right: -12px;
+            bottom: -12px;
+            border-radius: 2rem;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.05));
+            z-index: -1;
+            filter: blur(8px);
+        }
+
+        .floating-badge {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 1rem;
+            padding: 0.6rem 1.2rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.06);
+            animation: floatSlow 4s ease-in-out infinite;
+        }
+
+        .badge-pos-1 {
+            top: 25px;
+            left: -20px;
+        }
+
+        .badge-pos-2 {
+            bottom: 30px;
+            right: -15px;
+            animation-delay: 2s;
+        }
+
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Timeline styling */
+        .timeline-item {
+            position: relative;
+            padding-left: 2.5rem;
+            border-left: 2px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 2.5rem;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+            border-left-color: transparent;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -9px;
+            top: 0;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: var(--gold-primary);
+            box-shadow: 0 0 12px var(--gold-light);
+            border: 2px solid #ffffff;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-light);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d4af37;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold-dark);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <nav class="navbar navbar-expand-lg fixed-top glass-navbar py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center text-dark fw-bold fs-4" href="#">
+                <span class="d-inline-flex justify-content-center align-items-center bg-gold-subtle text-gold rounded-3 px-2.5 py-1 me-2 fs-6 fw-bold">AM</span>
+                <span class="font-serif fs-3">Thae Su Khaing</span>
+            </a>
+            <button class="navbar-toggler border-0 text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fa-solid fa-bars fs-4 text-gold"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-lg-3 mt-3 mt-lg-0 align-items-center">
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#skills">Skills</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#experience">Experience</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                </ul>
+                <a href="#contact" class="btn btn-gold btn-sm ms-lg-3 mt-2 mt-lg-0 px-4">Let's Talk</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="hero" class="min-vh-100 d-flex align-items-center pt-5">
+        <div class="container pt-5">
+            <div class="row align-items-center g-5 py-5">
+                <!-- Left Column: Copy & CTAs -->
+                <div class="col-lg-7 text-center text-lg-start">
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-gold-subtle mb-4">
+                        <span class="spinner-grow spinner-grow-sm text-gold" role="status"></span>
+                        <span class="small font-monospace text-gold fw-semibold">Available for Strategic IT Leadership & Consulting</span>
+                    </div>
+                    
+                    <h1 class="display-3 fw-bold text-dark mb-4" style="line-height: 1.15;">
+                        Driving <span class="text-gold italic">Digital Transformation</span> With Precision & Clarity
+                    </h1>
+                    
+                    <p class="lead text-muted fs-5 mb-4 pe-lg-4" style="max-width: 650px;">
+                        Hi, I'm <strong class="text-dark">Alex Morgan</strong>. Senior IT Project Manager bridging complex software engineering with calm, predictable execution, agile delivery, and business alignment.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start mb-5">
+                        <a href="#projects" class="btn btn-gold">
+                            <i class="fa-solid fa-briefcase me-2"></i>View Portfolio
+                        </a>
+                        <a href="#contact" class="btn btn-outline-gold">
+                            <i class="fa-solid fa-paper-plane me-2"></i>Contact Me
+                        </a>
+                    </div>
+
+                    <!-- Key Stats Grid -->
+                    <div class="row g-4 pt-4 border-top border-warning border-opacity-25">
+                        <div class="col-6 col-md-3">
+                            <h2 class="fw-bold text-gold fs-1 mb-0 font-serif">10+</h2>
+                            <p class="small text-muted mb-0 fw-medium">Years Experience</p>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <h2 class="fw-bold text-gold fs-1 mb-0 font-serif">$45M+</h2>
+                            <p class="small text-muted mb-0 fw-medium">Budgets Managed</p>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <h2 class="fw-bold text-gold fs-1 mb-0 font-serif">99%</h2>
+                            <p class="small text-muted mb-0 fw-medium">On-Time Delivery</p>
+                        </div>
+                        <div class="col-6 col-md-3">
+                            <h2 class="fw-bold text-gold fs-1 mb-0 font-serif">35+</h2>
+                            <p class="small text-muted mb-0 fw-medium">Sprints Delivered</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Stylized Profile Photo Card -->
+                <div class="col-lg-5 text-center">
+                    <div class="profile-image-wrapper">
+                        <div class="gold-ring-glow"></div>
+                        
+                        <!-- Profile Image Placeholder (Replace src attribute with your photo URL) -->
+                        <img src="my2.jpg" 
+                             alt="Alex Morgan - IT Project Manager Photo" 
+                             class="profile-img-card"
+                             onerror="this.src='https://placehold.co/400x480/c5a059/ffffff?text=Alex+Morgan'">
+
+                        <!-- Floating Badge 1 -->
+                        <div class="floating-badge badge-pos-1 d-none d-sm-flex align-items-center gap-2">
+                            <div class="bg-gold-subtle rounded-circle p-2 text-gold d-flex align-items-center justify-content-center" style="width:36px; height:36px;">
+                                <i class="fa-solid fa-award"></i>
+                            </div>
+                            <div class="text-start">
+                                <div class="fw-bold fs-6 text-dark mb-0">PMP® Certified</div>
+                                <div class="small text-muted" style="font-size: 0.75rem;">PMI Institute</div>
+                            </div>
+                        </div>
+
+                        <!-- Floating Badge 2 -->
+                        <div class="floating-badge badge-pos-2 d-none d-sm-flex align-items-center gap-2">
+                            <div class="bg-gold-subtle rounded-circle p-2 text-gold d-flex align-items-center justify-content-center" style="width:36px; height:36px;">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
+                            <div class="text-start">
+                                <div class="fw-bold fs-6 text-dark mb-0">Agile & Scrum</div>
+                                <div class="small text-muted" style="font-size: 0.75rem;">CSP-SM Master</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <span class="text-gold text-uppercase fw-bold small tracking-widest">Professional Summary</span>
+                <h2 class="fw-bold text-dark display-5 mt-2">Structured Execution. Empathetic Leadership.</h2>
+            </div>
+
+            <div class="row g-4 align-items-center">
+                <div class="col-lg-5">
+                    <div class="glass-card p-4 p-md-5">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-gold-subtle rounded-3 p-3 mb-4 text-gold fs-3">
+                            <i class="fa-solid fa-compass"></i>
+                        </div>
+                        <h3 class="fw-bold text-dark mb-3 fs-2">Strategic Vision & Execution</h3>
+                        <p class="text-muted leading-relaxed mb-4">
+                            In fast-moving cloud and enterprise technology landscapes, clarity is paramount. My focus is turning complex multi-squad backlogs into predictable, calm release schedules while safeguarding team well-being.
+                        </p>
+                        <ul class="list-unstyled d-flex flex-column gap-3 mb-0 text-muted">
+                            <li class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-circle-check text-gold"></i>
+                                <span>PMP & Certified Scrum Professional (CSP-SM)</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-circle-check text-gold"></i>
+                                <span>Cloud & Infrastructure Transformation Leader</span>
+                            </li>
+                            <li class="d-flex align-items-center gap-2">
+                                <i class="fa-solid fa-circle-check text-gold"></i>
+                                <span>Risk Mitigation & Executive Alignment Specialist</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-7">
+                    <div class="d-flex flex-column gap-4">
+                        <div class="glass-card p-4">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="bg-gold-subtle rounded-3 p-2.5 text-gold">
+                                    <i class="fa-solid fa-diagram-project fs-4"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold text-dark mb-1">Agile & Scrum Frameworks</h5>
+                                    <p class="text-muted mb-0 small">Expertise in leading SAFe, Scrum, and Kanban methodologies across distributed international teams to optimize sprint velocity and backlog refinement.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-4">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="bg-gold-subtle rounded-3 p-2.5 text-gold">
+                                    <i class="fa-solid fa-handshake fs-4"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold text-dark mb-1">Executive & Stakeholder Bridge</h5>
+                                    <p class="text-muted mb-0 small">Connecting executive strategic intent with engineering delivery through transparent KPI tracking, risk matrices, and interactive status reporting.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-4">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="bg-gold-subtle rounded-3 p-2.5 text-gold">
+                                    <i class="fa-solid fa-shield-halved fs-4"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold text-dark mb-1">Budgeting & Governance</h5>
+                                    <p class="text-muted mb-0 small">Disciplined P&L oversight, vendor contract negotiations, resource capacity planning, and DevSecOps governance adherence.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills" class="py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <span class="text-gold text-uppercase fw-bold small tracking-widest">Toolkit & Competencies</span>
+                <h2 class="fw-bold text-dark display-5 mt-2">Core Project Management Capabilities</h2>
+            </div>
+
+            <div class="row g-4">
+                <!-- Skill Card 1 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="bg-gold-subtle d-inline-block rounded-3 p-3 text-gold mb-3 fs-4">
+                                <i class="fa-solid fa-arrows-split-up-and-left"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-2">Agile & Scrum Coaching</h5>
+                            <p class="text-muted small mb-4">Sprint planning, velocity stabilization, retrospectives, and roadmapping across cross-functional engineering squads.</p>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-gold-subtle">Jira</span>
+                            <span class="badge bg-gold-subtle">Confluence</span>
+                            <span class="badge bg-gold-subtle">SAFe</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Card 2 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="bg-gold-subtle d-inline-block rounded-3 p-3 text-gold mb-3 fs-4">
+                                <i class="fa-solid fa-cloud"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-2">Cloud Transformations</h5>
+                            <p class="text-muted small mb-4">Managing multi-cloud architecture migrations, microservices adoption, and hybrid infrastructure modernizations.</p>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-gold-subtle">AWS</span>
+                            <span class="badge bg-gold-subtle">Azure</span>
+                            <span class="badge bg-gold-subtle">Kubernetes</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Card 3 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="bg-gold-subtle d-inline-block rounded-3 p-3 text-gold mb-3 fs-4">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-2">Financial & Resource Planning</h5>
+                            <p class="text-muted small mb-4">Capex/Opex forecasting, resource utilization tracking, vendor contracts, and quarterly OKR/KPI reporting.</p>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-gold-subtle">Budgeting</span>
+                            <span class="badge bg-gold-subtle">PowerBI</span>
+                            <span class="badge bg-gold-subtle">ROI Analysis</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Card 4 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="bg-gold-subtle d-inline-block rounded-3 p-3 text-gold mb-3 fs-4">
+                                <i class="fa-solid fa-shield-cat"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-2">DevSecOps & Compliance</h5>
+                            <p class="text-muted small mb-4">Embedding CI/CD automation, security scanning, SOC2 compliance, and regulatory standards into software delivery.</p>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-gold-subtle">CI/CD</span>
+                            <span class="badge bg-gold-subtle">SOC2</span>
+                            <span class="badge bg-gold-subtle">Zero Trust</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Card 5 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="bg-gold-subtle d-inline-block rounded-3 p-3 text-gold mb-3 fs-4">
+                                <i class="fa-solid fa-network-wired"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-2">Enterprise Architecture</h5>
+                            <p class="text-muted small mb-4">Orchestrating system integrations, legacy refactoring, API integrations, and scalable database transitions.</p>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-gold-subtle">Microservices</span>
+                            <span class="badge bg-gold-subtle">REST APIs</span>
+                            <span class="badge bg-gold-subtle">Docker</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill Card 6 -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="glass-card p-4 h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="bg-gold-subtle d-inline-block rounded-3 p-3 text-gold mb-3 fs-4">
+                                <i class="fa-solid fa-comments"></i>
+                            </div>
+                            <h5 class="fw-bold text-dark mb-2">Change Management</h5>
+                            <p class="text-muted small mb-4">Facilitating organizational change, stakeholder training, user adoption strategies, and escalation management.</p>
+                        </div>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="badge bg-gold-subtle">Training</span>
+                            <span class="badge bg-gold-subtle">Communication</span>
+                            <span class="badge bg-gold-subtle">Adoption</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <span class="text-gold text-uppercase fw-bold small tracking-widest">Portfolio</span>
+                <h2 class="fw-bold text-dark display-5 mt-2">Featured Enterprise Deliveries</h2>
+            </div>
+
+            <div class="row g-4">
+                <!-- Project Card 1 -->
+                <div class="col-lg-6">
+                    <div class="glass-card h-100 p-4 p-md-5 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge bg-gold-subtle">FinTech / Cloud Migration</span>
+                                <span class="small font-monospace text-muted">Completed</span>
+                            </div>
+                            <h4 class="fw-bold text-dark mb-3 fs-3">Core Banking Cloud Migration</h4>
+                            <p class="text-muted small leading-relaxed mb-4">
+                                Managed the zero-downtime transition of a core legacy ledger system to AWS multi-region infrastructure. Coordinated security audits and compliance frameworks for over 2M active daily accounts.
+                            </p>
+                            <div class="row g-3 mb-4 p-3 rounded-3 bg-light border border-warning border-opacity-25">
+                                <div class="col-6">
+                                    <div class="small text-muted">Cost Savings</div>
+                                    <div class="fw-bold text-gold fs-5 font-serif">-38% Infra Costs</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="small text-muted">Release Speed</div>
+                                    <div class="fw-bold text-gold fs-5 font-serif">10x Faster</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                <span class="badge bg-white text-dark border border-secondary border-opacity-25">AWS</span>
+                                <span class="badge bg-white text-dark border border-secondary border-opacity-25">Terraform</span>
+                                <span class="badge bg-white text-dark border border-secondary border-opacity-25">Kubernetes</span>
+                            </div>
+                            <button class="btn btn-outline-gold btn-sm w-100" onclick="showModal('Core Banking Cloud Migration', 'Led an engineering team of 24 across 3 regions. Successfully migrated 2 million accounts without data loss or service degradation.')">
+                                <i class="fa-solid fa-circle-info me-2"></i>View Case Study
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project Card 2 -->
+                <div class="col-lg-6">
+                    <div class="glass-card h-100 p-4 p-md-5 d-flex flex-column justify-content-between">
+                        <div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge bg-gold-subtle">Healthcare / SaaS</span>
+                                <span class="small font-monospace text-muted">Delivered</span>
+                            </div>
+                            <h4 class="fw-bold text-dark mb-3 fs-3">HIPAA Telehealth Platform Rollout</h4>
+                            <p class="text-muted small leading-relaxed mb-4">
+                                Led 3 dedicated engineering squads to deliver an end-to-end encrypted telehealth application connecting patients with hospital networks, adhering strictly to HIPAA standards.
+                            </p>
+                            <div class="row g-3 mb-4 p-3 rounded-3 bg-light border border-warning border-opacity-25">
+                                <div class="col-6">
+                                    <div class="small text-muted">SLA Uptime</div>
+                                    <div class="fw-bold text-gold fs-5 font-serif">99.99% Guaranteed</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="small text-muted">User Adoption</div>
+                                    <div class="fw-bold text-gold fs-5 font-serif">+150% Growth</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                <span class="badge bg-white text-dark border border-secondary border-opacity-25">Azure</span>
+                                <span class="badge bg-white text-dark border border-secondary border-opacity-25">WebRTC</span>
+                                <span class="badge bg-white text-dark border border-secondary border-opacity-25">Scrum</span>
+                            </div>
+                            <button class="btn btn-outline-gold btn-sm w-100" onclick="showModal('HIPAA Telehealth Platform Rollout', 'Delivered under budget in 8 months. Expanded healthcare access for over 500,000 active patients.')">
+                                <i class="fa-solid fa-circle-info me-2"></i>View Case Study
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="experience" class="py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <span class="text-gold text-uppercase fw-bold small tracking-widest">Career Progression</span>
+                <h2 class="fw-bold text-dark display-5 mt-2">Work Experience Timeline</h2>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-9">
+                    <!-- Timeline Item 1 -->
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card p-4 mb-2">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+                                <h4 class="fw-bold text-dark mb-0">Senior IT Project Manager</h4>
+                                <span class="badge bg-gold-subtle">2023 - Present</span>
+                            </div>
+                            <p class="text-gold mb-3 small fw-semibold">Apex Global Technologies • San Francisco, CA</p>
+                            <p class="text-muted small mb-3">Orchestrating high-impact cloud migrations and digital transformation initiatives across global engineering teams.</p>
+                            <ul class="text-muted small ps-3 mb-0">
+                                <li class="mb-1">Reduced sprint slippage by 22% through refined backlog grooming techniques.</li>
+                                <li>Managed $15M+ annual engineering budgets and third-party vendor relationships.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Item 2 -->
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card p-4 mb-2">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+                                <h4 class="fw-bold text-dark mb-0">Technical Scrum Master</h4>
+                                <span class="badge bg-light text-muted border border-secondary border-opacity-25">2020 - 2023</span>
+                            </div>
+                            <p class="text-gold mb-3 small fw-semibold">Nexus Cloud Solutions • Seattle, WA</p>
+                            <p class="text-muted small mb-3">Facilitated Agile ceremonies, removed cross-squad blockers, and established CI/CD metric dashboards.</p>
+                            <ul class="text-muted small ps-3 mb-0">
+                                <li class="mb-1">Maintained a 96% sprint commitment completion rate across 3 years.</li>
+                                <li>Coached 4 cross-functional development squads in SAFe Agile transition.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Timeline Item 3 -->
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="glass-card p-4">
+                            <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+                                <h4 class="fw-bold text-dark mb-0">IT Business Analyst</h4>
+                                <span class="badge bg-light text-muted border border-secondary border-opacity-25">2018 - 2020</span>
+                            </div>
+                            <p class="text-gold mb-3 small fw-semibold">Vanguard Systems • Austin, TX</p>
+                            <p class="text-muted small mb-3">Gathered functional specification documents, mapped user stories, and coordinated UAT phases.</p>
+                            <ul class="text-muted small ps-3 mb-0">
+                                <li>Bridged communication between backend development leads and executive business stakeholders.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-5">
+        <div class="container py-5">
+            <div class="text-center mb-5">
+                <span class="text-gold text-uppercase fw-bold small tracking-widest">Get In Touch</span>
+                <h2 class="fw-bold text-dark display-5 mt-2">Let's Discuss Your Next Strategic Initiative</h2>
+            </div>
+
+            <div class="row g-4 justify-content-center">
+                <div class="col-lg-5">
+                    <div class="glass-card p-4 p-md-5 h-100 d-flex flex-column justify-content-between">
+                        <div>
+                            <h4 class="fw-bold text-dark mb-4 fs-3">Contact Details</h4>
+                            <p class="text-muted small mb-4">
+                                Interested in strategic IT project consultation, cloud migration leadership, or agile coaching? Reach out via email or submit the form.
+                            </p>
+                            
+                            <div class="d-flex align-items-center gap-3 mb-4">
+                                <div class="bg-gold-subtle rounded-3 p-3 text-gold">
+                                    <i class="fa-solid fa-envelope fs-5"></i>
+                                </div>
+                                <div>
+                                    <div class="small text-muted">Direct Email</div>
+                                    <div class="fw-semibold text-dark id-email" id="email-text">alex.morgan@it-strategist.io</div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3 mb-4">
+                                <div class="bg-gold-subtle rounded-3 p-3 text-gold">
+                                    <i class="fa-solid fa-location-dot fs-5"></i>
+                                </div>
+                                <div>
+                                    <div class="small text-muted">Location</div>
+                                    <div class="fw-semibold text-dark">San Francisco, CA (Remote)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button class="btn btn-outline-gold w-100 mb-4" onclick="copyEmail()">
+                                <i class="fa-solid fa-copy me-2"></i><span id="copy-btn-text">Copy Email Address</span>
+                            </button>
+
+                            <div class="d-flex gap-3 justify-content-center">
+                                <a href="#" class="btn btn-outline-gold rounded-circle p-2 px-3"><i class="fa-brands fa-linkedin-in"></i></a>
+                                <a href="#" class="btn btn-outline-gold rounded-circle p-2 px-3"><i class="fa-brands fa-github"></i></a>
+                                <a href="#" class="btn btn-outline-gold rounded-circle p-2 px-3"><i class="fa-brands fa-x-twitter"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="glass-card p-4 p-md-5">
+                        <form id="contactForm" onsubmit="handleContactSubmit(event)">
+                            <div class="mb-3">
+                                <label class="form-label text-dark small fw-medium">Your Name</label>
+                                <input type="text" required class="form-control bg-white text-dark border-warning border-opacity-25 py-2.5" placeholder="e.g. Sarah Connor">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-dark small fw-medium">Email Address</label>
+                                <input type="email" required class="form-control bg-white text-dark border-warning border-opacity-25 py-2.5" placeholder="e.g. sarah@company.com">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-dark small fw-medium">Subject</label>
+                                <input type="text" required class="form-control bg-white text-dark border-warning border-opacity-25 py-2.5" placeholder="e.g. Project Consultation Inquiry">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label text-dark small fw-medium">Message</label>
+                                <textarea rows="4" required class="form-control bg-white text-dark border-warning border-opacity-25" placeholder="Tell me about your upcoming initiative..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-gold w-100 py-3">
+                                <i class="fa-solid fa-paper-plane me-2"></i>Send Message
+                            </button>
+                        </form>
+                        <div id="formFeedback" class="d-none text-center p-4">
+                            <div class="bg-gold-subtle rounded-circle d-inline-flex p-3 text-gold mb-3 fs-3">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                            <h4 class="fw-bold text-dark mb-2">Message Sent!</h4>
+                            <p class="text-muted small mb-0">Thank you for reaching out. I'll get back to you within 24 hours.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Custom Modal for Details -->
+    <div class="modal fade" id="infoModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-card border-warning border-opacity-50">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-header-title fw-bold text-dark font-serif fs-3 mb-0">Case Study Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-muted py-4" id="modalBodyText">
+                    Details placeholder...
+                </div>
+                <div class="modal-footer border-0 pt-0">
+                    <button type="button" class="btn btn-gold btn-sm px-4" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="py-4 border-top border-warning border-opacity-25">
+        <div class="container text-center text-muted small">
+            <p class="mb-0">© 2026 Alex Morgan. Designed with White & Gold Elegance, Bootstrap 5 & Three.js.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Copy Email helper function
+        function copyEmail() {
+            const email = document.getElementById('email-text').innerText;
+            const btnText = document.getElementById('copy-btn-text');
+            
+            const textarea = document.createElement('textarea');
+            textarea.value = email;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            btnText.innerText = 'Copied to Clipboard!';
+            setTimeout(() => {
+                btnText.innerText = 'Copy Email Address';
+            }, 2500);
+        }
+
+        // Form Submit Handler
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            document.getElementById('contactForm').classList.add('d-none');
+            document.getElementById('formFeedback').classList.remove('d-none');
+        }
+
+        // View Details Modal Trigger
+        function showModal(title, text) {
+            document.querySelector('.modal-header-title').innerText = title;
+            document.getElementById('modalBodyText').innerText = text;
+            const modal = new bootstrap.Modal(document.getElementById('infoModal'));
+            modal.show();
+        }
+
+        // Three.js Warm Gold Particle Canvas Animation for Light Theme
+        let scene, camera, renderer, particles;
+        let count = 0;
+
+        function initThreeJS() {
+            const container = document.getElementById('canvas-container');
+
+            scene = new THREE.Scene();
+
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+            camera.position.z = 280;
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            const numParticles = 1600;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(numParticles * 3);
+
+            let i = 0;
+            const gap = 36;
+            const amountX = 40;
+            const amountY = 40;
+
+            for (let ix = 0; ix < amountX; ix++) {
+                for (let iy = 0; iy < amountY; iy++) {
+                    positions[i] = (ix - amountX / 2) * gap;
+                    positions[i + 1] = 0;
+                    positions[i + 2] = (iy - amountY / 2) * gap;
+                    i += 3;
+                }
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+
+            // Gold colored particles with opacity tailored for light background
+            const material = new THREE.PointsMaterial({
+                color: 0xc5a059,
+                size: 3.2,
+                transparent: true,
+                opacity: 0.6
+            });
+
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        function animateThreeJS() {
+            requestAnimationFrame(animateThreeJS);
+
+            const positions = particles.geometry.attributes.position.array;
+            let i = 0;
+            const amountX = 40;
+            const amountY = 40;
+
+            for (let ix = 0; ix < amountX; ix++) {
+                for (let iy = 0; iy < amountY; iy++) {
+                    positions[i + 1] = (Math.sin((ix + count) * 0.25) * 14) + (Math.cos((iy + count) * 0.3) * 14);
+                    i += 3;
+                }
+            }
+
+            particles.geometry.attributes.position.needsUpdate = true;
+            count += 0.025;
+
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        window.onload = function () {
+            initThreeJS();
+            animateThreeJS();
+        };
+    </script>
+</body>
+</html>
